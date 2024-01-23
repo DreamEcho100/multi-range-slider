@@ -1,0 +1,35 @@
+.slider * {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+.slider__track {
+	position: absolute;
+	height: var(--h);
+	background-color: #ced4da;
+	width: 100%;
+	z-index: 1;
+	left: 0;
+	right: 0;
+}
+
+/* Removing the default appearance */
+.slider__track {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
+.slider__track::-moz-range-thumb {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
+.slider__track::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
