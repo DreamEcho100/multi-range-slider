@@ -43,7 +43,6 @@
 	-moz-appearance: none;
 	appearance: none;
 	-webkit-tap-highlight-color: transparent;
-	transform: translateX(-var(--r));
 }
 
 /* For Firefox browsers */
@@ -63,6 +62,7 @@
 	);
 	pointer-events: all;
 	position: relative;
+	/* transform: translateX(-25%); */
 }
 
 /* For Chrome browsers */
@@ -82,4 +82,5 @@
 	);
 	pointer-events: all;
 	position: relative;
+	/* transform: translateX(-25%); */
 }

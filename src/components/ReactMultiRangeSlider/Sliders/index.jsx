@@ -14,12 +14,18 @@ import { useStore } from 'zustand';
 
 /** @param {RangeSliderProps} props */
 function RangeSlider(props) {
-	const id = useStore(props.store, (state) => state.sliders[props.index].id);
+	const id = useStore(
+		props.store,
+		(state) => state.base.sliders[props.index].id
+	);
 	const start = useStore(
 		props.store,
-		(state) => state.sliders[props.index].start
+		(state) => state.base.sliders[props.index].start
 	);
-	const end = useStore(props.store, (state) => state.sliders[props.index].end);
+	const end = useStore(
+		props.store,
+		(state) => state.base.sliders[props.index].end
+	);
 	const setStart = useCallback(
 		/**
 		 * @param {number} value
@@ -99,8 +105,12 @@ function RangeSlider(props) {
 
 	// Get min and max values when their state changes
 	useEffect(() => {
+		const storeState = props.store.getState();
 		onSliderChange({
-			slider: { id, start, end }
+			slider: { id, start, end },
+			getTransformedSlider: storeState.getTransformedSlider,
+			getTransformedSliders: storeState.getTransformedSliders,
+			transformSlider: storeState.transformSlider
 		});
 	}, [end, id, onSliderChange, props.store, start]);
 
@@ -199,9 +209,12 @@ div
  * }} props
  */
 export default function RangesSliders(props) {
-	const min = useStore(props.store, (state) => state.min);
-	const max = useStore(props.store, (state) => state.max);
-	const slidersCount = useStore(props.store, (state) => state.sliders.length);
+	const min = useStore(props.store, (state) => state.base.min);
+	const max = useStore(props.store, (state) => state.base.max);
+	const slidersCount = useStore(
+		props.store,
+		(state) => state.base.sliders.length
+	);
 
 	const slidersSize = useMemo(
 		() => new Array(slidersCount).fill(0),

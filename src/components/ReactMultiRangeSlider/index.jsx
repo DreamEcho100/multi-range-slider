@@ -2,8 +2,8 @@
 // import { useId } from 'react';
 import { useMemo } from 'react';
 import classes from './index.module.css';
-import RangesSliders from './RangesSliders';
-import RangeTrackIndicator from './RangeTrackIndicator';
+import RangesSliders from './Sliders';
+import RangeTrackIndicator from './TrackIndicator';
 import { useStore } from 'zustand';
 
 /**
@@ -38,8 +38,8 @@ import { useStore } from 'zustand';
  * }} props
  */
 export default function ReactMultiRangeSlider(props) {
-	const min = useStore(props.store, (state) => state.min);
-	const max = useStore(props.store, (state) => state.max);
+	const min = useStore(props.store, (state) => state.base.min);
+	const max = useStore(props.store, (state) => state.base.max);
 
 	const __offset = useMemo(() => {
 		return (16 * (1 / (max - min))).toFixed(2);
