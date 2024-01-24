@@ -7,6 +7,31 @@ import RangeTrackIndicator from './RangeTrackIndicator';
 import { useStore } from 'zustand';
 
 /**
+ * @example
+ * ```tsx
+ * const mrsStore = useCreateMRSStore({
+ * 	min: 0,
+ * 	max: 48,
+ * 	rangeType: 'down',
+ * 	step: 0.5,
+ * 	sliders: [
+ * 		// { start: 0, end: 48 }
+ * 		{ start: 0, end: 8 },
+ * 		{ start: 9, end: 17 },
+ * 		{ start: 23, end: 32 },
+ * 		{ start: 35, end: 48 }
+ * 	]
+ * });
+ *
+ * <ReactMultiRangeSlider
+ * 	store={mrsStore}
+ * 	onSliderChange={(params) => {
+ * 		console.log(
+ * 			`id: ${params.slider.id}, start: ${params.slider.start}, end: ${params.slider.end}`
+ * 		);
+ * 	}}
+ * />;
+ * ```
  * @param {{
  * store: import('./utils').CreateMRSStoreApi
  * onSliderChange: import('./utils').OnSliderChange;
