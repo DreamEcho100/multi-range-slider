@@ -26,13 +26,12 @@ function RangeSlider(props) {
 		 * @param {string} id
 		 **/
 		(value, id) => {
-			props.store.getState().updateSlider(
-				(prev) => ({
-					...prev,
-					start: value
-				}),
-				{ id, type: 'start' }
-			);
+			props.store
+				.getState()
+				.updateSlider((prev) => ({ ...prev, start: value }), {
+					id,
+					type: 'start'
+				});
 		},
 		[props.store]
 	);
@@ -42,13 +41,9 @@ function RangeSlider(props) {
 		 * @param {string} id
 		 **/
 		(value, id) => {
-			props.store.getState().updateSlider(
-				(prev) => ({
-					...prev,
-					end: value
-				}),
-				{ id, type: 'end' }
-			);
+			props.store
+				.getState()
+				.updateSlider((prev) => ({ ...prev, end: value }), { id, type: 'end' });
 		},
 		[props.store]
 	);
@@ -206,20 +201,20 @@ div
 export default function RangesSliders(props) {
 	const min = useStore(props.store, (state) => state.min);
 	const max = useStore(props.store, (state) => state.max);
-	const slidersSize = useStore(props.store, (state) => state.sliders.length);
+	const slidersCount = useStore(props.store, (state) => state.sliders.length);
 
-	const temp = useMemo(() => new Array(slidersSize).fill(0), [slidersSize]);
+	const slidersSize = useMemo(
+		() => new Array(slidersCount).fill(0),
+		[slidersCount]
+	);
 
-	return temp.map((slider, sliderIndex) => (
+	return slidersSize.map((_, sliderIndex) => (
 		<RangeSlider
 			store={props.store}
 			min={min}
 			max={max}
 			key={sliderIndex}
-			// id={id}
 			index={sliderIndex}
-			// start={start}
-			// end={end}
 			onSliderChange={props.onSliderChange}
 		/>
 	));
