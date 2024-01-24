@@ -8,14 +8,8 @@ export default function RangeTrackIndicator(props) {
 	// const baseMax = useStore(props.store, (state) => state.base.max);
 	// const step = useStore(props.store, (state) => state.step);
 
-	const transformedMin = useStore(
-		props.store,
-		(state) => state.transformed.min
-	);
-	const transformedMax = useStore(
-		props.store,
-		(state) => state.transformed.max
-	);
+	const transformedMin = useStore(props.store, (state) => state.min);
+	const transformedMax = useStore(props.store, (state) => state.max);
 
 	const rangeType = useStore(props.store, (state) => state.rangeType);
 	const ranges = useMemo(() => {

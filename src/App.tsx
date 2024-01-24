@@ -52,10 +52,8 @@ function App() {
 						<ReactMultiRangeSlider
 							store={mrsStore}
 							onSliderChange={(params) => {
-								const transformSlider = params.transformSlider(params.slider);
-
 								console.log(
-									`id: ${transformSlider.id}, start: ${transformSlider.start}, end: ${transformSlider.end}`
+									`id: ${params.slider.id}, start: ${params.slider.start}, end: ${params.slider.end}`
 								);
 							}}
 						/>

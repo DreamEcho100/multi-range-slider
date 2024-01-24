@@ -13,8 +13,8 @@ import { useStore } from 'zustand';
  * }} props
  */
 export default function ReactMultiRangeSlider(props) {
-	const min = useStore(props.store, (state) => state.base.min);
-	const max = useStore(props.store, (state) => state.base.max);
+	const min = useStore(props.store, (state) => state.min);
+	const max = useStore(props.store, (state) => state.max);
 
 	const __offset = useMemo(() => {
 		return (16 * (1 / (max - min))).toFixed(2);

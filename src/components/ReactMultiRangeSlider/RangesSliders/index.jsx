@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import classes from './index.module.css';
 import { useStore } from 'zustand';
 
@@ -8,23 +8,18 @@ import { useStore } from 'zustand';
  * min: number;
  * max: number;
  * index: number;
- * id: import('../utils').Slider['id'];
- * start: import('../utils').Slider['start'];
- * end: import('../utils').Slider['end'];
  * onSliderChange: import('../utils').OnSliderChange;
  * }} RangeSliderProps
  */
 
 /** @param {RangeSliderProps} props */
 function RangeSlider(props) {
+	const id = useStore(props.store, (state) => state.sliders[props.index].id);
 	const start = useStore(
 		props.store,
-		(state) => state.base.sliders[props.index].start
+		(state) => state.sliders[props.index].start
 	);
-	const end = useStore(
-		props.store,
-		(state) => state.base.sliders[props.index].end
-	);
+	const end = useStore(props.store, (state) => state.sliders[props.index].end);
 	const setStart = useCallback(
 		/**
 		 * @param {number} value
@@ -91,7 +86,7 @@ function RangeSlider(props) {
 				rangeRef.current.style.width = `${maxPercent - minPercent}%`;
 			}
 		}
-	}, [start, getPercent]);
+	}, [getPercent, start]);
 
 	// Set width of the range to decrease from the right side
 	useEffect(() => {
@@ -110,16 +105,9 @@ function RangeSlider(props) {
 	// Get min and max values when their state changes
 	useEffect(() => {
 		onSliderChange({
-			slider: {
-				id: props.id,
-				start: start,
-				end: end
-			},
-			getTransformedSlider: props.store.getState().getTransformedSlider,
-			getTransformedSliders: props.store.getState().getTransformedSliders,
-			transformSlider: props.store.getState().transformSlider
+			slider: { id, start, end }
 		});
-	}, [start, end, onSliderChange, props.id, props.store]);
+	}, [end, id, onSliderChange, props.store, start]);
 
 	/*
 div
@@ -146,10 +134,10 @@ div
 				ref={minValRef}
 				onChange={(event) => {
 					const value = Math.min(+event.target.value, end - 1);
-					setStart(value, props.id);
+					setStart(value, id);
 					event.target.value = value.toString();
 				}}
-				style={{ zIndex: start > props.end - 100 ? 5 : 4 }}
+				style={{ zIndex: start > end - 100 ? 5 : 4 }}
 				className={`${classes.thumb} ${classes['thumb-min']}`}
 			/>
 			<input
@@ -160,7 +148,7 @@ div
 				ref={maxValRef}
 				onChange={(event) => {
 					const value = Math.max(+event.target.value, start + 1);
-					setEnd(value, props.id);
+					setEnd(value, id);
 					event.target.value = value.toString();
 				}}
 				className={`${classes.thumb} ${classes['thumb-max']}`}
@@ -216,20 +204,22 @@ div
  * }} props
  */
 export default function RangesSliders(props) {
-	const min = useStore(props.store, (state) => state.base.min);
-	const max = useStore(props.store, (state) => state.base.max);
-	const sliders = useStore(props.store, (state) => state.base.sliders);
+	const min = useStore(props.store, (state) => state.min);
+	const max = useStore(props.store, (state) => state.max);
+	const slidersSize = useStore(props.store, (state) => state.sliders.length);
 
-	return sliders.map((slider, sliderIndex) => (
+	const temp = useMemo(() => new Array(slidersSize).fill(0), [slidersSize]);
+
+	return temp.map((slider, sliderIndex) => (
 		<RangeSlider
 			store={props.store}
 			min={min}
 			max={max}
-			key={slider.id}
-			id={slider.id}
+			key={sliderIndex}
+			// id={id}
 			index={sliderIndex}
-			start={slider.start}
-			end={slider.end}
+			// start={start}
+			// end={end}
 			onSliderChange={props.onSliderChange}
 		/>
 	));
