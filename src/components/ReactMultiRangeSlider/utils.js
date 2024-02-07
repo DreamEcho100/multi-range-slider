@@ -1,23 +1,25 @@
-import { useRef } from 'react';
-import { createStore } from 'zustand';
+import { useRef } from "react";
+import { createStore } from "zustand";
 
 /**
  * @template CreateMRSStoreShape
  * @typedef {typeof createStore<CreateMRSStoreShape>} CreateStore */
 /** @typedef {{ id: string, start: number, end: number }} Slider */
 
+/** @typedef {{ min: number, max: number, sliders: Slider[], initialSliders: Slider[] }} CreateMRSStoreBase */
 /** @typedef {(slider: Slider) => Slider} TransformSlider */
-/** @typedef {() => Slider[]} GetTransformedSliders */
-/** @typedef {(id: string) => Slider | undefined} GetTransformedSlider */
+/** @typedef {(selectorKey?: 'sliders' | 'initialSliders') => Slider[]} GetTransformedSliders */
+/** @typedef {(id: string, selectorKey?: 'sliders' | 'initialSliders') => Slider | undefined} GetTransformedSlider */
 /** @typedef {(params: { slider: Slider, getTransformedSlider: GetTransformedSlider, getTransformedSliders: GetTransformedSliders, transformSlider: TransformSlider }) => void} OnSliderChange */
 
 /**
  * @typedef {{
  * transformed: { min: 0, max: number, },
- * base: { min: number, max: number, sliders: Slider[], },
+ * base: CreateMRSStoreBase,
  * step: number,
  * rangeType: 'down' | 'up' | 'alternate-even' | 'alternate-odd',
  * updateSlider: (valueOrUpdate: Slider | ((value: Slider) => Slider),  params: { id: string, index?: number, type: 'start' | 'end' } ) => void,
+ * setSliders: (sliders: (Omit<Slider, 'id'> & { id?: string })[], options?: { andSetInitialSliders?: boolean }) => void;
  * getTransformedSliders: GetTransformedSliders,
  * getTransformedSlider: GetTransformedSlider,
  * transformSlider: TransformSlider
@@ -30,7 +32,7 @@ import { createStore } from 'zustand';
  * min: CreateMRSStoreShape['transformed']['min'],
  * max: CreateMRSStoreShape['transformed']['max'],
  * rangeType?: CreateMRSStoreShape['rangeType'],
- * sliders: (Omit<Slider, 'id'> & { id?: string })[],
+ * initialSliders: (Omit<Slider, 'id'> & { id?: string })[],
  * step?: number,
  * }} CreateMRSStoreParams
  **/
@@ -40,109 +42,130 @@ const fixedTo2 = (value) => +value.toFixed(2);
 
 /** @param {CreateMRSStoreParams} params **/
 export function CreateMRSStore(params) {
-	/** @type {typeof createStore<CreateMRSStoreShape>} */
-	return createStore(
-		/**
-		 * @param {{ _(partial: CreateMRSStoreShape | Partial<CreateMRSStoreShape> | { _(state: CreateMRSStoreShape): CreateMRSStoreShape | Partial<CreateMRSStoreShape>; }['_'], replace?: boolean | undefined): void; }['_']} set
-		 * @param {() => CreateMRSStoreShape} get
-		 * @returns {CreateMRSStoreShape}
-		 */
-		(set, get) => {
-			const step = params.step ?? 1;
+  /** @type {typeof createStore<CreateMRSStoreShape>} */
+  return createStore(
+    /**
+     * @param {{ _(partial: CreateMRSStoreShape | Partial<CreateMRSStoreShape> | { _(state: CreateMRSStoreShape): CreateMRSStoreShape | Partial<CreateMRSStoreShape>; }['_'], replace?: boolean | undefined): void; }['_']} set
+     * @param {() => CreateMRSStoreShape} get
+     * @returns {CreateMRSStoreShape}
+     */
+    (set, get) => {
+      const step = params.step ?? 1;
+      const initialSliders = params.initialSliders.map((slider, index) => ({
+        id: slider.id ?? (index + Math.random()).toString(36).slice(2),
+        start: fixedTo2(slider.start / step),
+        end: fixedTo2(slider.end / step),
+      }));
+      const sliders = initialSliders.map((slider) => ({ ...slider }));
 
-			if (step > 1) {
-				throw new Error('step must be less than 1');
-			} else if (step <= 0) {
-				throw new Error('step must be greater than 0');
-			}
+      if (step > 1) {
+        throw new Error("step must be less than 1");
+      } else if (step <= 0) {
+        throw new Error("step must be greater than 0");
+      }
 
-			return {
-				transformed: {
-					min: params.min,
-					max: params.max
-				},
-				base: {
-					min: fixedTo2(params.min / step),
-					max: fixedTo2(params.max / step),
-					sliders: params.sliders.map((slider, index) => ({
-						id: slider.id ?? (index + Math.random()).toString(36).slice(2),
-						start: fixedTo2(slider.start / step),
-						end: fixedTo2(slider.end / step)
-					}))
-				},
+      return {
+        transformed: {
+          min: params.min,
+          max: params.max,
+        },
+        base: {
+          min: fixedTo2(params.min / step),
+          max: fixedTo2(params.max / step),
+          sliders,
+          initialSliders,
+        },
 
-				step,
-				rangeType: params.rangeType ?? 'down',
+        step,
+        rangeType: params.rangeType ?? "down",
 
-				updateSlider(valueOrUpdate, params) {
-					const base = get().base;
-					/** @type {Slider} */
-					let prevSlider;
-					/** @type {Slider} */
-					let currSlider;
-					/** @type {Slider} */
-					let nextSlider;
+        setSliders: (sliders, options) => {
+          const base = get().base;
 
-					let i = 0;
-					for (; i < base.sliders.length; i++) {
-						if (base.sliders[i].id === params.id) {
-							currSlider =
-								typeof valueOrUpdate === 'function'
-									? valueOrUpdate(base.sliders[i])
-									: valueOrUpdate;
+          base.sliders = sliders.map((slider, index) => ({
+            id: slider.id ?? (index + Math.random()).toString(36).slice(2),
+            start: fixedTo2(slider.start / step),
+            end: fixedTo2(slider.end / step),
+          }));
 
-							if (params.type === 'start' && i > 0) {
-								prevSlider = base.sliders[i - 1];
-								if (prevSlider.end > currSlider.start) {
-									currSlider.start = prevSlider.end;
-								}
-							} else if (params.type === 'end' && i < base.sliders.length - 1) {
-								nextSlider = base.sliders[i + 1];
-								if (nextSlider.start < currSlider.end) {
-									currSlider.end = nextSlider.start;
-								}
-							}
+          if (options?.andSetInitialSliders) {
+            base.initialSliders = base.sliders.map((slider) => ({ ...slider }));
+          }
 
-							base.sliders[i] = currSlider;
-							break;
-						}
-					}
-					return set({ base });
-				},
-				getTransformedSliders() {
-					const store = get();
-					/** @type {Slider[]} */
-					const transformedSliders = new Array(store.base.sliders.length);
+          set({ base });
+        },
+        updateSlider(valueOrUpdate, params) {
+          const base = get().base;
+          /** @type {Slider} */
+          let prevSlider;
+          /** @type {Slider} */
+          let currSlider;
+          /** @type {Slider} */
+          let nextSlider;
 
-					for (let i = 0; i < store.base.sliders.length; i++) {
-						const slider = store.base.sliders[i];
-						transformedSliders[i] = store.transformSlider(slider);
-					}
+          let i = 0;
+          for (; i < base.sliders.length; i++) {
+            if (/** @type {Slider} */ (base.sliders[i]).id === params.id) {
+              currSlider =
+                typeof valueOrUpdate === "function"
+                  ? valueOrUpdate(/** @type {Slider} */ (base.sliders[i]))
+                  : valueOrUpdate;
 
-					return transformedSliders;
-				},
-				getTransformedSlider(id) {
-					const store = get();
+              if (params.type === "start" && i > 0) {
+                prevSlider = /** @type {Slider} */ (base.sliders[i - 1]);
+                if (prevSlider.end > currSlider.start) {
+                  currSlider.start = prevSlider.end;
+                }
+              } else if (params.type === "end" && i < base.sliders.length - 1) {
+                nextSlider = /** @type {Slider} */ (base.sliders[i + 1]);
+                if (nextSlider.start < currSlider.end) {
+                  currSlider.end = nextSlider.start;
+                }
+              }
 
-					for (let i = 0; i < store.base.sliders.length; i++) {
-						if (store.base.sliders[i].id === id) {
-							return store.transformSlider(store.base.sliders[i]);
-						}
-					}
-				},
-				transformSlider(slider) {
-					const store = get();
-					return {
-						...slider,
-						start: fixedTo2(slider.start * store.step),
-						end: fixedTo2(slider.end * store.step)
-					};
-				}
-			};
-		}
-	);
+              base.sliders[i] = currSlider;
+              break;
+            }
+          }
+          return set({ base });
+        },
+        getTransformedSliders(selectorKey = "sliders") {
+          const store = get();
+          /** @type {Slider[]} */
+          const transformedSliders = new Array(store.base[selectorKey].length);
+
+          for (let i = 0; i < store.base[selectorKey].length; i++) {
+            const slider = /** @type {Slider} */ (store.base[selectorKey][i]);
+            transformedSliders[i] = store.transformSlider(slider);
+          }
+
+          return transformedSliders;
+        },
+        getTransformedSlider(id, selectorKey = "sliders") {
+          const store = get();
+
+          // eslint-disable-next-line @typescript-eslint/prefer-for-of
+          for (let i = 0; i < store.base[selectorKey].length; i++) {
+            if (/** @type {Slider} */ (store.base[selectorKey][i]).id === id) {
+              return store.transformSlider(
+                /** @type {Slider} */ (store.base[selectorKey][i]),
+              );
+            }
+          }
+        },
+        transformSlider(slider) {
+          const store = get();
+          return {
+            ...slider,
+            start: fixedTo2(slider.start * store.step),
+            end: fixedTo2(slider.end * store.step),
+          };
+        },
+      };
+    },
+  );
 }
 
 /** @param {CreateMRSStoreParams} params */
 export const useCreateMRSStore = (params) =>
-	useRef(CreateMRSStore(params)).current;
+  useRef(CreateMRSStore(params)).current;
