@@ -1,16 +1,53 @@
-.slider__range,
+.slider__track,
 .slider__left-value,
 .slider__right-value {
 	position: absolute;
 }
 
-.slider__range {
+.slider__track {
 	height: var(--h);
 }
 
-.slider__range {
+.slider__track {
 	background-color: #9fe5e1;
 	z-index: 2;
+}
+
+.slider__range-config {
+	isolation: isolate;
+	width: 100%;
+	height: 200%;
+	position: relative;
+	background-color: red;
+	transform: translateY(-50%);
+	opacity: 0;
+	z-index: -1;
+	transition: all 0.3s ease 1.2s;
+	/* animation: fadeAnimation 0.3s ease 1.2s forwards; */
+}
+
+.slider__range-config .slider__range-config__tooltip {
+	z-index: 3;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%) translateY(-125%);
+	background-color: #f1f5f7;
+	color: #495057;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	box-shadow: 0 0 0.0625rem 0.0625rem #ced4da;
+	/* opacity: 0; */
+	transition: all 0.3s ease;
+}
+
+.slider:focus-within,
+.slider:hover .slider__range-config,
+.slider__range-config:hover {
+	opacity: 1;
+	z-index: 999;
+	/* animation: revealAnimation 0.3s ease 1.2s forwards; */
+	transition: all 1.3s ease 0.2s;
 }
 
 /* Removing the default appearance */

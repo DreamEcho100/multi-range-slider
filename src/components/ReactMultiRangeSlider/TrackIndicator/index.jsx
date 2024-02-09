@@ -24,10 +24,10 @@ export default function RangeTrackIndicator(props) {
 
 		let i = transformedMin + 1;
 		for (; i < transformedMax; i++) {
-			ranges.push((i + 1) % 1 === 0 ? i : null);
+			ranges.push(i % 8 === 0 ? (i > 24 ? i - 24 : i) : null);
 		}
 
-		ranges.push((i + 1) % 1 === 0 ? i : null);
+		ranges.push(i % 8 === 0 ? (i > 24 ? i - 24 : i) : null);
 
 		return ranges;
 	}, [transformedMin, transformedMax]);

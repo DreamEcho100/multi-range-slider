@@ -10,8 +10,8 @@ function App() {
 		min: 0,
 		max: 48,
 		rangeType: 'down',
-		step: 0.5,
-		sliders: [
+		step: 1,
+		initialSliders: [
 			// { start: 0, end: 48 }
 			{ start: 0, end: 8 },
 			{ start: 9, end: 17 },
@@ -45,8 +45,9 @@ function App() {
 					<div
 						className='card'
 						style={{
-							overflowX: 'auto',
-							maxWidth: '100%'
+							// overflowX: 'auto',
+							// overflowY: 'visible',
+							width: '100%'
 						}}
 					>
 						<ReactMultiRangeSlider
