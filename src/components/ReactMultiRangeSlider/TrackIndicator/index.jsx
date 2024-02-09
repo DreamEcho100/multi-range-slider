@@ -51,6 +51,19 @@ export default function RangeTrackIndicator(props) {
 					height: '100%'
 				}}
 			>
+				<div
+					style={{
+						left: `${
+							// (index / step)
+							((24 / (transformedMax - transformedMin)) * 100).toFixed(2)
+						}%`,
+						position: 'absolute',
+						transform: 'translateX(-50%) translateY(-100%)',
+						width: '0.5rem',
+						height: '1.5rem',
+						backgroundColor: 'red'
+					}}
+				/>
 				{ranges.map((item, index) => {
 					const isEven = index % 2 === 0;
 					const isOdd = index % 2 !== 0;

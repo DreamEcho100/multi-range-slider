@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useStore } from 'zustand';
 
 import classes from './index.module.css';
@@ -15,15 +15,14 @@ import classes from './index.module.css';
 
 /**
  *
+ * @typedef {{ hours: number; minutes: number; }} TimeValues
  * @param {{
- * setValues: (newValues: { hours: number; minutes: number }) => boolean;
+ * setValues: (updater: ((values: TimeValues) => TimeValues)) => void;
  * hours: number;
  * minutes: number;
  * }} props
  */
-function TimeEditField(props) {
-	// const [_, setValues] = useState({ hours: 0, minutes: 0 });
-
+function TimeEditController(props) {
 	const maxHours = 48;
 	const maxMinutes = 59;
 
@@ -59,7 +58,6 @@ function TimeEditField(props) {
 				hours: newValue,
 				minutes: newValue === maxHours ? 0 : prev.minutes
 			};
-			props.setValues(result);
 			return result;
 		});
 	}
@@ -71,8 +69,8 @@ function TimeEditField(props) {
 	 * }} params
 	 */
 	function handleMinutesChange(params) {
-		setValues((prev) => {
-			if (values.hours === maxHours) {
+		props.setValues((prev) => {
+			if (props.hours === maxHours) {
 				return { ...prev, minutes: 0 };
 			}
 
@@ -188,33 +186,27 @@ function TimeEditField(props) {
  * setValue: (value: number, id: string) => void
  * value: number;
  * trackId: string;
- * transformValue: (value: number) => number,
- * deTransformValue: (value: number) => number,
+ * label: string
  * }} MinMaxProps
  */
 
 /**
  * @param {MinMaxProps} props
  */
-function MinTimeField(props) {
+function TimeField(props) {
 	// const
-	const value = props.deTransformValue(props.value);
-	const hours = Math.floor(value);
-	const minutes = (value % 1) * 60;
+	const hours = Math.floor(props.value);
+	const minutes = Math.round((props.value % 1) * 60);
 
-	console.log('hours:', hours, 'minutes:', minutes);
 	return (
 		<fieldset>
-			<TimeEditField
-				setValues={(values) => {
-					console.log('values:', values);
-					const newValue =
-						// props.transformValue(
-						values.hours + values.minutes / 60;
-					// );
-					console.log('newValue:', newValue);
-					// props.setValue(newValue, props.trackId);
-					return true;
+			<legend>{props.label}</legend>
+			<TimeEditController
+				setValues={(updater) => {
+					const value = updater({ hours, minutes });
+					const newValue = value.hours + value.minutes / 60;
+
+					props.setValue(newValue, props.trackId);
 				}}
 				hours={hours}
 				minutes={minutes}
@@ -242,13 +234,20 @@ function SliderTrack(props) {
 			<div className={classes['slider__range-config']}>
 				<div className={classes['slider__range-config__tooltip']}>
 					<div className={classes['slider__range-config__tooltip__text']}>
-						<MinTimeField
-							setValue={props.setStart}
-							trackId={props.trackId}
-							value={props.start}
-							transformValue={props.transformValue}
-							deTransformValue={props.deTransformValue}
-						/>
+						<div style={{ display: 'flex', gap: '0.25rem' }}>
+							<TimeField
+								setValue={props.setStart}
+								trackId={props.trackId}
+								value={props.start}
+								label='Start'
+							/>
+							<TimeField
+								setValue={props.setEnd}
+								trackId={props.trackId}
+								value={props.end}
+								label='End'
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
