@@ -20,13 +20,15 @@
 	position: relative;
 	background-color: transparent;
 	transform: translateX(0.25rem) translateY(-75%);
-	opacity: 0;
-	z-index: -1;
+	/* z-index: 99999; */
+	/* opacity: 0; */
+	/* z-index: -1; */
+	/* pointer-events: none; */
 	transition: all 0.3s ease 1.2s;
 	/* animation: fadeAnimation 0.3s ease 1.2s forwards; */
 }
 
-.slider__range-config .slider__range-config__tooltip {
+.slider__range-config__tooltip {
 	z-index: 3;
 	position: absolute;
 	top: 0;
@@ -37,15 +39,17 @@
 	padding: 0.25rem 0.5rem;
 	border-radius: 0.25rem;
 	box-shadow: 0 0 0.0625rem 0.0625rem #ced4da;
-	/* opacity: 0; */
+	opacity: 0;
 	transition: all 0.3s ease;
 }
 
-.slider:focus-within,
-.slider:hover .slider__range-config,
-.slider__range-config:hover {
+.slider:focus-within .slider__range-config__tooltip,
+.slider:hover .slider__range-config__tooltip
+
+/* .slider__range-config:hover  */ {
 	opacity: 1;
 	z-index: 999;
+	/* pointer-events: all; */
 	/* animation: revealAnimation 0.3s ease 1.2s forwards; */
 	transition: all 1.3s ease 0.2s;
 }

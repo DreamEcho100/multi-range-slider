@@ -230,26 +230,23 @@ function TimeField(props) {
 function SliderTrack(props) {
 	return (
 		<div ref={props.rangeRef} className={classes.slider__track}>
-			{/*  */}
-			<div className={classes['slider__range-config']}>
-				<div className={classes['slider__range-config__tooltip']}>
-					<div className={classes['slider__range-config__tooltip__text']}>
-						<div style={{ display: 'flex', gap: '0.25rem' }}>
-							<TimeField
-								setValue={props.setStart}
-								trackId={props.trackId}
-								value={props.start}
-								label='Start'
-							/>
-							<TimeField
-								setValue={props.setEnd}
-								trackId={props.trackId}
-								value={props.end}
-								label='End'
-							/>
-						</div>
-					</div>
-				</div>
+			<div className={classes['slider__range-config']} />
+			<div
+				style={{ display: 'flex', gap: '0.25rem' }}
+				className={classes['slider__range-config__tooltip']}
+			>
+				<TimeField
+					setValue={props.setStart}
+					trackId={props.trackId}
+					value={props.start}
+					label='Start'
+				/>
+				<TimeField
+					setValue={props.setEnd}
+					trackId={props.trackId}
+					value={props.end}
+					label='End'
+				/>
 			</div>
 		</div>
 	);
@@ -317,14 +314,6 @@ function RangeSlider(props) {
 		[props.min, props.max]
 	);
 
-	// const configRef = useRef({
-	// 	isInitialized: false,
-	// 	track: { translateX: 0, originalX: 0, width: 0 },
-	// 	trackContainer: { x: 0, x2: 0 },
-	// 	mouse: { oldX: 0 },
-	// 	isActive: false
-	// });
-
 	// Set width of the range to decrease from the left side
 	useEffect(() => {
 		if (maxValRef.current) {
@@ -364,47 +353,49 @@ function RangeSlider(props) {
 	}, [end, id, onSliderChange, props.store, start]);
 
 	return (
-		<div className={classes.slider}>
-			<input
-				type='range'
-				min={props.min}
-				max={props.max}
-				value={start}
-				ref={minValRef}
-				onChange={(event) => {
-					const value = Math.min(+event.target.value, end - 1);
-					setStart(value, id);
-					event.target.value = value.toString();
-				}}
-				style={{ zIndex: start > end - 100 ? 5 : 4 }}
-				className={`${classes.thumb} ${classes['thumb-min']}`}
-			/>
-			<input
-				type='range'
-				min={props.min}
-				max={props.max}
-				value={end}
-				ref={maxValRef}
-				onChange={(event) => {
-					const value = Math.max(+event.target.value, start + 1);
-					setEnd(value, id);
-					event.target.value = value.toString();
-				}}
-				className={`${classes.thumb} ${classes['thumb-max']}`}
-				style={{ zIndex: 4 }}
-			/>
+		<>
+			<div className={classes.slider}>
+				<input
+					type='range'
+					min={props.min}
+					max={props.max}
+					value={start}
+					ref={minValRef}
+					onChange={(event) => {
+						const value = Math.min(+event.target.value, end - 1);
+						setStart(value, id);
+						event.target.value = value.toString();
+					}}
+					style={{ zIndex: start > end - 100 ? 5 : 4 }}
+					className={`${classes.thumb} ${classes['thumb-min']}`}
+				/>
+				<input
+					type='range'
+					min={props.min}
+					max={props.max}
+					value={end}
+					ref={maxValRef}
+					onChange={(event) => {
+						const value = Math.max(+event.target.value, start + 1);
+						setEnd(value, id);
+						event.target.value = value.toString();
+					}}
+					className={`${classes.thumb} ${classes['thumb-max']}`}
+					style={{ zIndex: 4 }}
+				/>
 
-			<SliderTrack
-				rangeRef={rangeRef}
-				end={end}
-				setEnd={setEnd}
-				setStart={setStart}
-				start={start}
-				trackId={id}
-				transformValue={props.store.getState().transformValue}
-				deTransformValue={props.store.getState().deTransformValue}
-			/>
-		</div>
+				<SliderTrack
+					rangeRef={rangeRef}
+					end={end}
+					setEnd={setEnd}
+					setStart={setStart}
+					start={start}
+					trackId={id}
+					transformValue={props.store.getState().transformValue}
+					deTransformValue={props.store.getState().deTransformValue}
+				/>
+			</div>
+		</>
 	);
 }
 
