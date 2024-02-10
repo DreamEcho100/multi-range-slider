@@ -18,13 +18,14 @@ import { createStore } from 'zustand';
  * base: CreateMRSStoreBase,
  * step: number,
  * rangeType: 'down' | 'up' | 'alternate-even' | 'alternate-odd',
+ * setSliders: (sliders: (Omit<Slider, 'id'> & { id?: string })[], options?: { andSetInitialSliders?: boolean }) => void,
  * updateSlider: (valueOrUpdate: Slider | ((value: Slider) => Slider),  params: { id: string, index?: number, type: 'start' | 'end' } ) => void,
- * transformValue: (value: number) => number,
+ * addSlider: (slider?: Partial<Slider>) => void,
  * deTransformValue: (value: number) => number,
- * setSliders: (sliders: (Omit<Slider, 'id'> & { id?: string })[], options?: { andSetInitialSliders?: boolean }) => void;
+ * transformValue: (value: number) => number,
+ * transformSlider: TransformSlider,
  * getTransformedSliders: GetTransformedSliders,
  * getTransformedSlider: GetTransformedSlider,
- * transformSlider: TransformSlider
  *  }} CreateMRSStoreShape
  **/
 /** @typedef { import('zustand').StoreApi<CreateMRSStoreShape> } CreateMRSStoreApi */
@@ -147,6 +148,47 @@ export function CreateMRSStore(params) {
 					}
 					set({ base });
 				},
+				addSlider(slider) {
+					const store = get();
+					const base = store.base;
+
+					const id =
+						slider?.id ??
+						(base.sliders.length + Math.random()).toString(36).slice(2);
+					let start = slider?.start
+						? store.transformValue(slider?.start)
+						: undefined;
+					let end = slider?.end ? store.transformValue(slider.end) : undefined;
+
+					const lastSlider = base.sliders[base.sliders.length - 1];
+
+					if (typeof start !== 'number') {
+						start = lastSlider ? lastSlider.end + store.step : base.min;
+					}
+
+					if (typeof end !== 'number') {
+						end = start + store.step;
+					}
+
+					if (end > base.max) {
+						end = base.max;
+					}
+
+					if (start > end) {
+						console.error('start must be less than end');
+						return;
+					}
+
+					const newSlider = {
+						id,
+						start,
+						end
+					};
+
+					base.sliders.push(newSlider);
+					set({ base });
+				},
+
 				getTransformedSliders(selectorKey = 'sliders') {
 					const store = get();
 					/** @type {Slider[]} */

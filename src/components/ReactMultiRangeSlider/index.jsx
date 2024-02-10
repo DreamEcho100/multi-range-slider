@@ -72,6 +72,30 @@ export default function ReactMultiRangeSlider(props) {
 			<div className={classes.slider__track} />
 
 			<RangeTrackIndicator store={props.store} />
+
+			<div
+				style={{
+					position: 'absolute',
+					right: 0,
+					// bottom: '-500%',
+					transform: 'translateY(150%)'
+				}}
+			>
+				<button
+					style={{
+						backgroundColor: 'gray',
+						color: 'white',
+						padding: '0.25rem 0.5rem',
+						border: 0,
+						borderRadius: 0
+					}}
+					onClick={() => {
+						props.store.getState().addSlider();
+					}}
+				>
+					add
+				</button>
+			</div>
 		</div>
 	);
 }
