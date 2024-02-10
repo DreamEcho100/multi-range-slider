@@ -13,10 +13,14 @@ function App() {
 		step: 1,
 		initialSliders: [
 			// { start: 0, end: 48 }
-			{ start: 0, end: 8 },
-			{ start: 9, end: 17 },
-			{ start: 23, end: 32 },
-			{ start: 35, end: 48 }
+			//
+			{ start: 0, end: 8 }
+			// { start: 9, end: 17 }
+			// { start: 23, end: 32 },
+			// { start: 35, end: 48 }
+			//
+			// { start: 5.5, end: 12.5 },
+			// { start: 6.5, end: 23 }
 		]
 	});
 

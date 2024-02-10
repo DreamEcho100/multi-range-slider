@@ -20,12 +20,7 @@
 	position: relative;
 	background-color: transparent;
 	transform: translateX(0.25rem) translateY(-75%);
-	/* z-index: 99999; */
-	/* opacity: 0; */
-	/* z-index: -1; */
-	/* pointer-events: none; */
 	transition: all 0.3s ease 1.2s;
-	/* animation: fadeAnimation 0.3s ease 1.2s forwards; */
 }
 
 .slider__range-config__tooltip {
@@ -39,19 +34,18 @@
 	padding: 0.25rem 0.5rem;
 	border-radius: 0.25rem;
 	box-shadow: 0 0 0.0625rem 0.0625rem #ced4da;
+	pointer-events: visible;
+	visibility: hidden;
 	opacity: 0;
-	transition: all 0.3s ease;
+	transition: all 0.25s ease 0.5s;
 }
 
 .slider:focus-within .slider__range-config__tooltip,
-.slider:hover .slider__range-config__tooltip
-
-/* .slider__range-config:hover  */ {
+.slider:hover .slider__range-config__tooltip {
 	opacity: 1;
-	z-index: 999;
-	/* pointer-events: all; */
-	/* animation: revealAnimation 0.3s ease 1.2s forwards; */
-	transition: all 1.3s ease 0.2s;
+	visibility: visible;
+	pointer-events: all;
+	transition: all 1.3s ease 0.5s;
 }
 
 /* Removing the default appearance */
@@ -103,7 +97,6 @@
 	);
 	pointer-events: all;
 	position: relative;
-	/* transform: translateX(-25%); */
 }
 
 /* For Chrome browsers */
@@ -123,5 +116,4 @@
 	);
 	pointer-events: all;
 	position: relative;
-	/* transform: translateX(-25%); */
 }

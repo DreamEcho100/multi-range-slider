@@ -21,6 +21,7 @@ import { createStore } from 'zustand';
  * setSliders: (sliders: (Omit<Slider, 'id'> & { id?: string })[], options?: { andSetInitialSliders?: boolean }) => void,
  * updateSlider: (valueOrUpdate: Slider | ((value: Slider) => Slider),  params: { id: string, index?: number, type: 'start' | 'end' } ) => void,
  * addSlider: (slider?: Partial<Slider>) => void,
+ * deleteSlider: (id: string) => void,
  * deTransformValue: (value: number) => number,
  * transformValue: (value: number) => number,
  * transformSlider: TransformSlider,
@@ -163,7 +164,7 @@ export function CreateMRSStore(params) {
 					const lastSlider = base.sliders[base.sliders.length - 1];
 
 					if (typeof start !== 'number') {
-						start = lastSlider ? lastSlider.end + store.step : base.min;
+						start = lastSlider ? lastSlider.end + store.step * 4 : base.min;
 					}
 
 					if (typeof end !== 'number') {
@@ -186,6 +187,19 @@ export function CreateMRSStore(params) {
 					};
 
 					base.sliders.push(newSlider);
+					set({ base });
+				},
+				deleteSlider(id) {
+					const store = get();
+					const base = store.base;
+
+					let i = 0;
+					for (; i < base.sliders.length; i++) {
+						if (base.sliders[i].id === id) {
+							base.sliders.splice(i, 1);
+							break;
+						}
+					}
 					set({ base });
 				},
 

@@ -1,11 +1,11 @@
 // import { useStore } from 'zustand';
 // import { useId } from 'react';
-import { useMemo } from 'react';
-import { useStore } from 'zustand';
+import { useMemo } from "react";
+import { useStore } from "zustand";
 
-import classes from './index.module.css';
-import RangesSliders from './Sliders';
-import RangeTrackIndicator from './TrackIndicator';
+import classes from "./index.module.css";
+import RangesSliders from "./Sliders";
+import RangeTrackIndicator from "./TrackIndicator";
 
 /**
  * @example
@@ -39,63 +39,65 @@ import RangeTrackIndicator from './TrackIndicator';
  * }} props
  */
 export default function ReactMultiRangeSlider(props) {
-	const min = useStore(props.store, (state) => state.base.min);
-	const max = useStore(props.store, (state) => state.base.max);
+  const min = useStore(props.store, (state) => state.base.min);
+  const max = useStore(props.store, (state) => state.base.max);
 
-	const __offset = useMemo(() => {
-		return (16 * (1 / (max - min))).toFixed(2);
-	}, [max, min]);
+  const __offset = useMemo(() => {
+    return (16 * (1 / (max - min))).toFixed(2);
+  }, [max, min]);
 
-	return (
-		<div
-			className={classes.slider}
-			style={
-				/** @type {import('react').CSSProperties} */
-				({
-					// width: 1024,
-					maxWidth: '100%',
-					position: 'relative',
-					'--h': '0.4rem',
-					height: 'var(--h)',
-					'--min': min,
-					'--max': max,
-					'--r': `var(--h)`,
-					'--offset': __offset
-					// isolation: 'isolate'
-				})
-			}
-		>
-			<RangesSliders
-				store={props.store}
-				onSliderChange={props.onSliderChange}
-			/>
-			<div className={classes.slider__track} />
+  return (
+    <div
+      className={classes.slider}
+      style={
+        /** @type {import('react').CSSProperties} */
+        ({
+          // width: 1024,
+          maxWidth: "100%",
+          position: "relative",
+          "--h": "0.4rem",
+          height: "var(--h)",
+          "--min": min,
+          "--max": max,
+          "--r": `var(--h)`,
+          "--offset": __offset,
+          // isolation: 'isolate'
+        })
+      }
+    >
+      <RangesSliders
+        store={props.store}
+        onSliderChange={props.onSliderChange}
+      />
+      <div className={classes.slider__track} />
 
-			<RangeTrackIndicator store={props.store} />
+      <RangeTrackIndicator store={props.store} />
 
-			<div
-				style={{
-					position: 'absolute',
-					right: 0,
-					// bottom: '-500%',
-					transform: 'translateY(150%)'
-				}}
-			>
-				<button
-					style={{
-						backgroundColor: 'gray',
-						color: 'white',
-						padding: '0.25rem 0.5rem',
-						border: 0,
-						borderRadius: 0
-					}}
-					onClick={() => {
-						props.store.getState().addSlider();
-					}}
-				>
-					add
-				</button>
-			</div>
-		</div>
-	);
+      <div
+        style={{
+          position: "absolute",
+          right: 0,
+          // bottom: '-500%',
+          transform: "translateY(150%)",
+        }}
+      >
+        <button
+          style={{
+            backgroundColor: "gray",
+            color: "white",
+            padding: "0.25rem 0.5rem",
+            border: 0,
+            borderRadius: 0,
+            textTransform: "capitalize",
+          }}
+          onClick={() => {
+            props.store.getState().addSlider();
+          }}
+          type="button"
+        >
+          add
+        </button>
+      </div>
+    </div>
+  );
 }

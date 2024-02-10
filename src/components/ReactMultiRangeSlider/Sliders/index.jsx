@@ -200,7 +200,7 @@ function TimeField(props) {
 
 	return (
 		<fieldset>
-			<legend>{props.label}</legend>
+			<legend style={{ textAlign: 'center' }}>{props.label}</legend>
 			<TimeEditController
 				setValues={(updater) => {
 					const value = updater({ hours, minutes });
@@ -225,6 +225,7 @@ function TimeField(props) {
  * rangeRef: import('react').MutableRefObject<HTMLDivElement | null>;
  * transformValue: (value: number) => number;
  * deTransformValue: (value: number) => number;
+ * handleDeleteSlider: () => void;
  * }} props
  */
 function SliderTrack(props) {
@@ -232,21 +233,49 @@ function SliderTrack(props) {
 		<div ref={props.rangeRef} className={classes.slider__track}>
 			<div className={classes['slider__range-config']} />
 			<div
-				style={{ display: 'flex', gap: '0.25rem' }}
 				className={classes['slider__range-config__tooltip']}
+				style={{ display: 'flex', flexDirection: 'column' }}
 			>
-				<TimeField
-					setValue={props.setStart}
-					trackId={props.trackId}
-					value={props.start}
-					label='Start'
-				/>
-				<TimeField
-					setValue={props.setEnd}
-					trackId={props.trackId}
-					value={props.end}
-					label='End'
-				/>
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'flex-end',
+						height: '0.75rem'
+					}}
+				>
+					<button
+						style={{
+							backgroundColor: 'transparent',
+							border: 'none',
+							cursor: 'pointer',
+							fontSize: '0.75rem',
+							color: 'black'
+						}}
+						type='button'
+						onClick={props.handleDeleteSlider}
+					>
+						x
+					</button>
+				</div>
+				<div
+					style={{
+						display: 'flex',
+						gap: '0.25rem'
+					}}
+				>
+					<TimeField
+						setValue={props.setStart}
+						trackId={props.trackId}
+						value={props.start}
+						label='Start'
+					/>
+					<TimeField
+						setValue={props.setEnd}
+						trackId={props.trackId}
+						value={props.end}
+						label='End'
+					/>
+				</div>
 			</div>
 		</div>
 	);
@@ -393,6 +422,9 @@ function RangeSlider(props) {
 					trackId={id}
 					transformValue={props.store.getState().transformValue}
 					deTransformValue={props.store.getState().deTransformValue}
+					handleDeleteSlider={() => {
+						props.store.getState().deleteSlider(id);
+					}}
 				/>
 			</div>
 		</>
